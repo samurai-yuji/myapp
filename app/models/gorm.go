@@ -17,7 +17,7 @@ func InitDB() {
     pass := os.Getenv("DB_PASS")
     dbase := os.Getenv("DB_DBASE")
 
-    var dsn = user + ":" + pass+ "@" + "tcp(" + host + ")/" + dbase
+    var dsn = user + ":" + pass+ "@" + "tcp(" + host + ")/" + dbase + "?parseTime=true"
     db, err := gorm.Open("mysql", dsn)
     if err != nil {
         panic(err)

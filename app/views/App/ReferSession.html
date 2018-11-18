@@ -1,0 +1,12 @@
+{{set . "title" "Home"}}
+{{template "header.html" .}}
+
+{{if .flag}}
+<h1>{{.n1}}</h1>
+<h1>{{.n2}}</h1>
+{{else}}
+<h1>No data.</h1>
+{{end}}
+<a href="/">Back to form</a>
+
+{{template "footer.html" .}}

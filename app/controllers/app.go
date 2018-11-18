@@ -39,3 +39,54 @@ func (c App) Hello() revel.Result {
 
 	return c.Render(myText)
 }
+
+func (c App) StoreSession() revel.Result {
+
+	n1, _ := strconv.ParseUint(c.Params.Form.Get("number1"),10,32)
+	fmt.Println(n1)
+
+	data := &models.Table{}
+
+	if models.Db == nil {
+		return c.RenderError(nil)
+	}else{
+		models.Db.Where(&models.Table{Col1: n1}).First(data)
+	}
+
+	c.Session.Set("user1",data)
+	fmt.Println(data.Col1,data.Col2)
+
+	return c.Redirect("/")
+}
+
+func (c App) ReferSession() revel.Result {
+
+	// Session.Get()
+	/*
+	sess, err := c.Session.Get("user1")
+	data := sess.(map[string]interface{})
+	if err == nil {
+		n1 := data["Col1"]
+		n2 := data["Col2"]
+		flag := true
+		return c.Render(flag,n1,n2)
+	}else{
+		flag := false
+		return c.Render(flag)
+	}
+	*/
+
+	// Session.GetInto()
+	data := &models.Table{}
+	_,  err := c.Session.GetInto("user1", data, false)
+	if err == nil {
+		n1 := data.Col1
+		n2 := data.Col2
+		flag := true
+		return c.Render(flag,n1,n2)
+	}else{
+		flag := false
+		return c.Render(flag)
+	}
+
+}
