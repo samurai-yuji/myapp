@@ -12,7 +12,7 @@ type App struct {
 }
 
 func (c App) Index() revel.Result {
-        greeting := "Aloha world"
+	greeting := "Aloha world"
 	return c.Render(greeting)
 }
 
@@ -26,12 +26,14 @@ func (c App) Hello() revel.Result {
 		Col1 : n1,
 		Col2 : n2,
 	}
-	fmt.Println("AAA")
 
+	var myText string
 	if models.Db == nil {
-		fmt.Println("BBB")
+		myText = "DB connection is not established."
 	}else{
 		models.Db.Create(data)
+		myText = fmt.Sprintf("Inserted %d, %d.",n1,n2)
 	}
-	return c.Render("OK")
+
+	return c.Render(myText)
 }
