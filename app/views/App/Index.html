@@ -5,7 +5,11 @@
   <div class="container">
     <div class="row">
       <h1>{{.greeting}}</h1>
-      <p></p>
+      {{if my_eq .a .b}}
+        <h2>{{my_disp .a}}</h2>
+      {{else}}
+        <h2>{{my_disp .b}}</h2>
+      {{end}}
     </div>
   </div>
 </header>
