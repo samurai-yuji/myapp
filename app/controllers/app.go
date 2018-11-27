@@ -2,7 +2,10 @@ package controllers
 
 import (
 	"github.com/revel/revel"
+	"golang.org/x/oauth2"
 	"myapp/app/models"
+	"io/ioutil"
+	"encoding/json"
 	"strconv"
 	"fmt"
 )
@@ -90,3 +93,57 @@ func (c App) ReferSession() revel.Result {
 	}
 
 }
+
+type Github struct {
+	ClientId string `json:ClientId`
+	ClientSecret string `json:ClientSecret`
+}
+
+func (c App) StartOauth() revel.Result {
+
+	// Read entire content of a file
+	dat, err := ioutil.ReadFile(revel.BasePath+"/private/github.json")
+	if err != nil{
+		panic(err)
+	}
+
+    // Decode JSON into Github struct variable
+    var github Github
+    if err := json.Unmarshal(dat, &github); err != nil {
+		panic(err)
+    }
+
+	githubConfig := &oauth2.Config{
+		ClientID:     github.ClientId,
+		ClientSecret: github.ClientSecret,
+		RedirectURL:  "http://localhost:9000/App/RedirectedOauth",
+		Scopes:       []string{"user:email"},
+		Endpoint: oauth2.Endpoint{
+			AuthURL:  "https://github.com/login/oauth/authorize",
+			TokenURL: "https://github.com/login/oauth/access_token",
+		},
+	}
+
+	c.Session.Set("github",github)
+
+	// https://godoc.org/golang.org/x/oauth2#Config.AuthCodeURL
+	// State is a token to protect the user from CSRF attacks.
+	// You must always provide a non-empty string and validate that it matches the the state query parameter on your redirect callback.
+	// See http://tools.ietf.org/html/rfc6749#section-10.12 for more info.
+	return c.Redirect(githubConfig.AuthCodeURL(""))
+}
+
+func (c App) RedirectedOauth(code string) revel.Result {
+
+	githubConfig := &oauth2.Config{}
+	_,  err := c.Session.GetInto("github", githubConfig, false)
+	if err != nil{
+		panic(err)
+	}
+
+	githubConfig.Exchange(oauth2.NoContext, code)
+	fmt.Println(code)
+
+	return c.Redirect("/")
+}
+

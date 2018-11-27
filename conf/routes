@@ -12,6 +12,9 @@ POST    /App/Hello                              App.Hello
 POST    /App/StoreSession                       App.StoreSession
 GET     /App/ReferSession                       App.ReferSession
 
+GET     /App/StartOauth                         App.StartOauth
+GET     /App/RedirectedOauth                    App.RedirectedOauth
+
 # Ignore favicon requests
 GET     /favicon.ico                            404
 
